@@ -9,12 +9,13 @@
   :probe-type='3' 
   @scroll="contentScroll"
   :pullUpload="true"
-  @pullingUp = 'loadMore'>
+  @pullingUp = "loadMore"
+  >
 
-  <HomeSwiper :banners = 'banners' />
+  <HomeSwiper :banners = 'banners'  @swiperImageLoad = 'swiperImageLoad'/>
   <RecommendView :recommends = "recommends" />
   <FeatureView/>
-  <TabControl  class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick"/>
+  <TabControl  class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" ref='tabControl'/>
   <GoodsList  :goods = "showGoods" />
 </Scroll>
 
@@ -34,6 +35,7 @@ import RecommendView from './childComps/RecommendView';
 import FeatureView from './childComps/FeatureView'
 
 import {getHomeMultidata,getHomeGoods} from 'network/home';
+import {debounce} from 'common/utiles'
 
 
   export default {
@@ -57,6 +59,7 @@ import {getHomeMultidata,getHomeGoods} from 'network/home';
           banners: [],
           recommends: [],
           isShowBackTop: false,
+          tabOffsetTop: 0,
           // 数据模型
           goods:{
             'pop': {page: 0, list: []},
@@ -66,25 +69,67 @@ import {getHomeMultidata,getHomeGoods} from 'network/home';
           currentType: 'pop'
         }
       },
-    //  创建好就请求数据
+    //  1. 创建好就请求数据
     created() {
       // 加this调用的是methods的函数
       this.getHomeMultidata();
-      // 请求商品数据
+      // 2. 请求商品数据
       this.getHomeGoods("pop");
       this.getHomeGoods("new");
       this.getHomeGoods("sell");
 
+      // 3. 组件一旦创建完成就监听事件总线里面的itemImageLoad（图片加载完成事件）然后刷新scrollHeight
+      // 不建议在create里面，推荐在mounted里面
+      // this.$bus.$on("itemImageLoad", ()=>{
+      //   console.log('itemImageLoad');
+      //   // this.$refs.scroll.scroll.refresh
+      //   this.$refs.scroll.refresh()
+
+      // })
+      
     },
+    
     computed: {
       showGoods(){
         return this.goods[this.currentType].list
       }
     },
+    mounted() {
+      // 1. 组件一旦创建完成并挂载就监听事件总线里面的itemImageLoad（图片加载完成事件）然后刷新scrollHeight
+      //  const refresh = this.debounce(this.$refs.scroll.refresh,100)
+       const refresh = debounce(this.$refs.scroll.refresh,100)
+
+       this.$bus.$on("itemImageLoad", ()=>{
+        // console.log('itemImageLoad');
+        // this.$refs.scroll.scroll.refresh
+        // this.$refs.scroll.refresh()
+        refresh()
+      })
+      // 2. 获取tabControl的offsetTop
+      // 所有的组件都有一个属性$el  用于获取组件中的元素
+      // this.tabOffsetTop = this.$refs.TabControl.$el.offsetTop
+      // console.log(this.$refs.tabControl.$el.offsetTop)
+    },
     methods: {
       /**
        * 事件监听相关
        */
+
+      // //  防抖函数
+      // debounce(func, delay){
+      //   let timer = null
+      //   return function(...args){
+      //     if (timer) clearTimeout(timer)
+      //     timer = setTimeout(() => {
+      //       func.apply(this,args)
+      //     }, delay);
+      //   }
+      // },
+      swiperImageLoad(){
+        //  console.log(this.$refs.tabControl.$el.offsetTop)
+        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop
+      },
+
       tabClick(index){
         console.log("0")
         switch(index){
@@ -115,8 +160,12 @@ import {getHomeMultidata,getHomeGoods} from 'network/home';
       console.log("上拉加载更多")
       this.getHomeGoods(this.currentType);
       // 重新计算可滚动区域
-      this.$refs.scroll.scroll.refresh();
+      // this.$refs.scroll.scroll.refresh();
+    },
 
+    loadMore(){
+      console.log('加载更多'),
+      this.getHomeGoods(this.currentType)
     },
 
 
@@ -144,6 +193,7 @@ import {getHomeMultidata,getHomeGoods} from 'network/home';
           this.goods[type].list.push(...res.data.list);
           this.goods[type].page += 1;
 
+        // 完成上拉加载更多，调用一下继续下次上拉加载
           this.$refs.scroll.finishPullUp()
 
         // console.log("商品数据",res)
@@ -171,11 +221,11 @@ import {getHomeMultidata,getHomeGoods} from 'network/home';
     z-index: 9;
   }
 
-  .tab-control{
+  /* .tab-control{
     /* position: sticky; */
-    top: 44px;
+    /* top: 44px;
     z-index: 9;
-  }
+  } */ 
 
   .content{
     overflow: hidden;
