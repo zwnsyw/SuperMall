@@ -3,6 +3,8 @@
   <NavBar class='home-nav'>
     <div slot="center">世白么购物街</div>
   </NavBar>
+  <TabControl  class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" ref='tabControl1'  v-show="isTabFixed"/>
+
 
   <Scroll class="content" 
   ref='scroll' 
@@ -15,7 +17,7 @@
   <HomeSwiper :banners = 'banners'  @swiperImageLoad = 'swiperImageLoad'/>
   <RecommendView :recommends = "recommends" />
   <FeatureView/>
-  <TabControl  class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" ref='tabControl'/>
+  <TabControl   :titles="['流行','新款','精选']" @tabClick="tabClick" ref='tabControl2' />
   <GoodsList  :goods = "showGoods" />
 </Scroll>
 
@@ -60,6 +62,8 @@ import {debounce} from 'common/utiles'
           recommends: [],
           isShowBackTop: false,
           tabOffsetTop: 0,
+          isTabFixed: false,
+          saveY:0,
           // 数据模型
           goods:{
             'pop': {page: 0, list: []},
@@ -69,6 +73,20 @@ import {debounce} from 'common/utiles'
           currentType: 'pop'
         }
       },
+    destroyed() {
+      console.log("销毁")
+    },
+    activated() {
+      console.log("进入/回来")
+      this.$refs.scroll.scrollTo(0, this.saveY,1)  // x: 0 , 1是延迟
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      console.log("离开")
+      // this.saveY = this.$refs.scroll.scroll.y
+      this.saveY = this.$refs.scroll.getScrollY()
+      console.log(this.saveY)
+    },
     //  1. 创建好就请求数据
     created() {
       // 加this调用的是methods的函数
@@ -127,7 +145,7 @@ import {debounce} from 'common/utiles'
       // },
       swiperImageLoad(){
         //  console.log(this.$refs.tabControl.$el.offsetTop)
-        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
       },
 
       tabClick(index){
@@ -143,6 +161,8 @@ import {debounce} from 'common/utiles'
             this.currentType = "sell";
             break
         }
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
       },
       backClick(){
       console.log("回到顶部");
@@ -153,7 +173,11 @@ import {debounce} from 'common/utiles'
     contentScroll(position){
       // console.log(position)
       // position.y > 1000px
+      // 1. 判断BackTop是否显示
       this.isShowBackTop = (-position.y) > 550
+
+      // 2. 决定tabControl是否吸顶（position: fixed）
+      this.isTabFixed = (-position.y) > this.tabOffsetTop
     },
 
     loadMore(){
@@ -214,6 +238,7 @@ import {debounce} from 'common/utiles'
   .home-nav{
     background-color: var(--color-tint);
     color: #fff;
+/* 在使用浏览器使用原生滚动时，为了让导航不跟随一起滚动 */
     position: fixed;
     left: 0;
     right: 0;
@@ -235,6 +260,17 @@ import {debounce} from 'common/utiles'
     left: 0;
     right: 0;
   }
+  .tab-control{
+    position: relative;
+    z-index: 9;
+  }
+
+  /* .fixed{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 44px;
+  } */
 
   /* .content{
     height: calc(100% - 44px - 49px);

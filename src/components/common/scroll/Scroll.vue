@@ -73,6 +73,11 @@ export default {
     refresh(){
       console.log("scrollHeight次数")
       this.scroll && this.scroll.refresh();
+    },
+    getScrollY(){
+      //  三目运算(this.scroll有值就返回y坐标，没值就返回0)
+      // return this.scroll ? this.scroll.y : 0
+      return this.scroll.y
     }
   },
 }
