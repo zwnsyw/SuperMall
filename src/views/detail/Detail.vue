@@ -13,6 +13,10 @@
    <GoodsList ref="recommend" :goods='recommends'></GoodsList>
    </scroll>
 
+   <DetailBottomBar></DetailBottomBar>
+
+   <BackTop @click.native='backClick' v-show="isShowBackTop"></BackTop >
+
   </div>
 </template>
 
@@ -24,6 +28,7 @@ import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from'./childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from "./childComps/DetailCommentInfo"
+import DetailBottomBar from './childComps/DetailBottomBar'
 
 import GoodsList from 'components/content/goods/GoodsList'
 
@@ -34,7 +39,7 @@ import Scroll from "components/common/scroll/Scroll"
 import {getDetail, Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
 
 import {debounce} from 'common/utiles'
-import {itemListenerMixin} from 'common/mixin'
+import {itemListenerMixin, backTopMixin} from 'common/mixin'
 
 export default {
   name: "Detail",
@@ -66,9 +71,10 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
-    GoodsList
+    GoodsList,
+    DetailBottomBar
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin , backTopMixin],
   created() {
     // 1. 保存传入的iid
     console.log("bb",this.$route.params)
@@ -156,6 +162,9 @@ export default {
       this.$refs.scroll.scrollTo(0 ,  -this.themTopYs[index] , 500)
     },
     contentScroll(position){
+
+      this.isShowBackTop = (-position.y) > 550
+
       // console.log(position)
       const positionY = -position.y
 
@@ -211,7 +220,7 @@ export default {
   height: 100vh;
 }
 .content{
-  height: calc(100% - 44px);
+  height: calc(100% - 44px - 49px);
 }
 .detailnavbar{
   position: relative;

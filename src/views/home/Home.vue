@@ -39,16 +39,19 @@ import FeatureView from './childComps/FeatureView'
 import {getHomeMultidata,getHomeGoods} from 'network/home';
 import {debounce} from 'common/utiles'
 
+import {backTopMixin} from 'common/mixin'
+
 
   export default {
     name: "Home",
+    mixins:[backTopMixin],
     components: {
       //  公共组件
     NavBar,
     TabControl,
     GoodsList,
     Scroll,
-    BackTop,
+    // BackTop,
 
 
     HomeSwiper,
@@ -60,7 +63,7 @@ import {debounce} from 'common/utiles'
         return {
           banners: [],
           recommends: [],
-          isShowBackTop: false,
+          // isShowBackTop: false,
           tabOffsetTop: 0,
           isTabFixed: false,
           saveY:0,
@@ -172,11 +175,11 @@ import {debounce} from 'common/utiles'
         this.$refs.tabControl1.currentIndex = index;
         this.$refs.tabControl2.currentIndex = index;
       },
-      backClick(){
-      console.log("回到顶部");
-      // this.$refs.scroll.scroll.scrollTo(0,0,500);
-      this.$refs.scroll.scrollTo(0,0,500);
-    },
+    //   backClick(){
+    //   console.log("回到顶部");
+    //   // this.$refs.scroll.scroll.scrollTo(0,0,500);
+    //   this.$refs.scroll.scrollTo(0,0,500);
+    // },
 
     contentScroll(position){
       // console.log(position)
