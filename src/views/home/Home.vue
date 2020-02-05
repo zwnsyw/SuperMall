@@ -1,7 +1,7 @@
 <template>
   <div id="home">
   <NavBar class='home-nav'>
-    <div slot="center">世白么购物街</div>
+    <div slot="center">安琪拉衣阁</div>
   </NavBar>
   <TabControl  class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" ref='tabControl1'  v-show="isTabFixed"/>
 
@@ -64,6 +64,7 @@ import {debounce} from 'common/utiles'
           tabOffsetTop: 0,
           isTabFixed: false,
           saveY:0,
+          itemImgListener:null,
           // 数据模型
           goods:{
             'pop': {page: 0, list: []},
@@ -84,8 +85,13 @@ import {debounce} from 'common/utiles'
     deactivated() {
       console.log("离开")
       // this.saveY = this.$refs.scroll.scroll.y
+      // 1. 保存离开时候的y坐标
       this.saveY = this.$refs.scroll.getScrollY()
       console.log(this.saveY)
+
+      // 2. 取消全局事件的监听
+      this.$bus.$off('itemImageLoad',this.itemImgListener)
+
     },
     //  1. 创建好就请求数据
     created() {
@@ -117,12 +123,14 @@ import {debounce} from 'common/utiles'
       //  const refresh = this.debounce(this.$refs.scroll.refresh,100)
        const refresh = debounce(this.$refs.scroll.refresh,100)
 
-       this.$bus.$on("itemImageLoad", ()=>{
+      // 对监听的事件进行保存
+      this.itemImgListener = ()=>{
         // console.log('itemImageLoad');
         // this.$refs.scroll.scroll.refresh
         // this.$refs.scroll.refresh()
         refresh()
-      })
+      }
+       this.$bus.$on("itemImageLoad",  this.itemImgListener )
       // 2. 获取tabControl的offsetTop
       // 所有的组件都有一个属性$el  用于获取组件中的元素
       // this.tabOffsetTop = this.$refs.TabControl.$el.offsetTop

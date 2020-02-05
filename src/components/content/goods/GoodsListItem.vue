@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" alt="" @load="imageLoad">
+    <img :src="showImage" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -19,14 +19,30 @@ export default {
         return {}
       }
   },
+  computed: {
+    showImage(){
+      return this.goodsItem.image || this.goodsItem.show.img
+    }
+  },
   methods: {
     imageLoad(){
       // console.log('图片加载');
       this.$bus.$emit("itemImageLoad")
+
+      // 思路2. 根据路由判断每个页面使用GoodsListItem的时候发送对应的自定义事件,不同的页面做不同的事情
+      // if (this.$route.path.indexOf('/home')){
+      //   this.$bus.$emit("HomeitemImageLoad")
+      // }else if(this.$route.path.indexOf('/detail')){
+      //   this.$bus.$emit("HomeitemImageLoad")
+      // }
     },
     itemClick(){
-      console.log("详情页",this.goodsItem.iid)
-      this.$router.push('/detail/' + this.goodsItem.iid)
+      // console.log("详情页",this.goodsItem.iid)
+      if (this.goodsItem.iid){
+        this.$router.push('/detail/' + this.goodsItem.iid)
+        console.log("详情页",this.goodsItem.iid)
+      }
+      // this.$router.push('/detail/' + this.goodsItem.iid)
       // query方式
       // this.$router.push({
       //   path: '/detail',

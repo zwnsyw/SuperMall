@@ -4,7 +4,8 @@ import axios from "axios"
 // 如果换axios框架，只需本页去掉axios相关，导入最新框架，return new Promise（）就可以，其他文件依旧正常使用
 export function request(config) {
     const instance = axios.create({
-      baseURL: 'http://123.207.32.32:8000/api/hy',
+      // baseURL: 'http://123.207.32.32:8000/api/hy',
+      baseURL: 'http://106.54.54.237:8000/api/hy',
       timeout: 5000
     });
 
