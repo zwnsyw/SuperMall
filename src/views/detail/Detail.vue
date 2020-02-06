@@ -3,6 +3,12 @@
    <DetailNavBar class="detailnavbar" @titleClick='titleClick' ref="detailNav"></DetailNavBar>
 
    <scroll class="content" ref="scroll" @scroll='contentScroll' :probe-type="3">
+<ul>
+  <li v-for="item in $store.state.carList">
+    {{item}}
+    </li>
+</ul>
+
      <!-- 属性：topImages     传值： top-images -->
      <DetailSwiper :top-images = "topImages" ></DetailSwiper>
    <DetailBaseInfo  :goods = "goods"></DetailBaseInfo>
@@ -13,7 +19,7 @@
    <GoodsList ref="recommend" :goods='recommends'></GoodsList>
    </scroll>
 
-   <DetailBottomBar></DetailBottomBar>
+   <DetailBottomBar @addCart='addToCart'></DetailBottomBar>
 
    <BackTop @click.native='backClick' v-show="isShowBackTop"></BackTop >
 
@@ -186,6 +192,24 @@ export default {
           this.$refs.detailNav.currentIndex = this.currentIndex
         }
       }
+    },
+    addToCart(){
+      // console.log("++++++++++++++")
+      // 1. 获取加入到购物车信息
+      const product = {}
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid
+
+      // 2. 将商品添加都购物车
+      // 提交到mutation
+      // this.$store.commit('addCart',product)
+
+      //提交到action
+      this.$store.dispatch('addCart',product)
+      console.log("detail:------",product)
     }
   },
   mounted(){

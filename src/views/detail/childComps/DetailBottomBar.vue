@@ -27,6 +27,7 @@ export default {
   methods: {
     addToCart(){
       console.log("加入购物车")
+      this.$emit("addCart")
     }
   },
 }
@@ -82,7 +83,7 @@ export default {
   .bar-right {
     font-size: 15px;
     color: #fff;
-    line-height: 58px;
+    line-height: 49px;
   }
 
   .bar-right .cart {
