@@ -3,11 +3,7 @@
    <DetailNavBar class="detailnavbar" @titleClick='titleClick' ref="detailNav"></DetailNavBar>
 
    <scroll class="content" ref="scroll" @scroll='contentScroll' :probe-type="3">
-<ul>
-  <li v-for="item in $store.state.carList">
-    {{item}}
-    </li>
-</ul>
+
 
      <!-- 属性：topImages     传值： top-images -->
      <DetailSwiper :top-images = "topImages" ></DetailSwiper>
@@ -17,11 +13,14 @@
    <DetailParamInfo  ref="params" :paramInfo="paramInfo"></DetailParamInfo>
    <DetailCommentInfo ref='comment' :commentInfo = 'commentInfo'></DetailCommentInfo>
    <GoodsList ref="recommend" :goods='recommends'></GoodsList>
+
    </scroll>
 
    <DetailBottomBar @addCart='addToCart'></DetailBottomBar>
 
    <BackTop @click.native='backClick' v-show="isShowBackTop"></BackTop >
+
+   <Toast :message="message" :show="show"></Toast>
 
   </div>
 </template>
@@ -36,9 +35,13 @@ import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from "./childComps/DetailCommentInfo"
 import DetailBottomBar from './childComps/DetailBottomBar'
 
+import Toast from 'components/common/toast/Toast'
+
 import GoodsList from 'components/content/goods/GoodsList'
 
 import Scroll from "components/common/scroll/Scroll"
+
+import {mapActions} from 'vuex'
 
 
 //不是组件，只是方法，只需要导入就可以吧使用，不需要在components里面注册
@@ -63,7 +66,9 @@ export default {
        itemImgListener:null,
        themTopYs: [],
        getThemTopY: null,
-       currentIndex: null
+       currentIndex: null,
+       message: '',
+       show: false
       
     }
   },
@@ -78,7 +83,8 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     GoodsList,
-    DetailBottomBar
+    DetailBottomBar,
+    Toast
   },
   mixins: [itemListenerMixin , backTopMixin],
   created() {
@@ -151,6 +157,8 @@ export default {
     })
   },
   methods:{
+    ...mapActions(['addCart']),
+
     imageLoad(){
       this.$refs.scroll.refresh()
       // 会调用多次，加个防抖函数
@@ -206,9 +214,21 @@ export default {
       // 2. 将商品添加都购物车
       // 提交到mutation
       // this.$store.commit('addCart',product)
+      //提交到action（1. Promise , 2.mapActions）
+      this.addCart(product).then(res =>{
+        this.show = true
+        this.message = res
 
-      //提交到action
-      this.$store.dispatch('addCart',product)
+        setTimeout(()=>{this.show = false;
+         this.message = ''
+         },1500)
+       
+        // console.log(res)
+      })
+
+      // this.$store.dispatch('addCart',product).then(res =>{
+      //   console.log(res)
+      // })
       console.log("detail:------",product)
     }
   },

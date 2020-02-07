@@ -1,7 +1,7 @@
 <template>
   <div id="home">
   <NavBar class='home-nav'>
-    <div slot="center">安琪拉衣阁</div>
+    <div slot="center">世白么购物街</div>
   </NavBar>
   <TabControl  class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" ref='tabControl1'  v-show="isTabFixed"/>
 
