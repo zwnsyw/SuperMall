@@ -216,12 +216,14 @@ export default {
       // this.$store.commit('addCart',product)
       //提交到action（1. Promise , 2.mapActions）
       this.addCart(product).then(res =>{
-        this.show = true
-        this.message = res
+        this.$toast.show(res,1500)
 
-        setTimeout(()=>{this.show = false;
-         this.message = ''
-         },1500)
+        // this.show = true
+        // this.message = res
+
+        // setTimeout(()=>{this.show = false;
+        //  this.message = ''
+        //  },1500)
        
         // console.log(res)
       })

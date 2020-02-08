@@ -9,10 +9,8 @@
       合计：{{totalPrice}}
     </div>
 
-    <div class="calculate">
-      <a href="http://www.zwnsyw.com" class="go-caculate">
+    <div class="calculate" @click='calcClick'>
       去结算({{checkLength}})
-    </a>
       </div>
 
   </div>
@@ -68,6 +66,11 @@ export default {
             item.checked = true
           })
         }
+    },
+    calcClick(){
+      if (!this.isSelectAll){
+        this.$toast.show('请选择购买的商品')
+      }
     }
   },
 }
