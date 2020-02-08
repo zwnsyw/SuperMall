@@ -16,7 +16,7 @@
     </div>
     <div class="bar-item bar-right">
       <div class="cart" @click="addToCart">加入购物车</div>
-      <div class="buy">购买</div>
+      <div class="buy" @click="Buy">购买</div>
     </div>
   </div>
 </template>
@@ -28,6 +28,9 @@ export default {
     addToCart(){
       console.log("加入购物车")
       this.$emit("addCart")
+    },
+    Buy(){
+      this.$toast.show("就是不卖给你，咋啦！")
     }
   },
 }
